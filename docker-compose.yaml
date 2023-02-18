@@ -1,0 +1,70 @@
+version: "3.2"
+services:
+  # redis:
+  #   image: redis
+  #   volumes: 
+  #     - ./redis:/data
+  mcs_orders_01:
+    image: mcs_orders:latest
+    volumes:
+        - ./orders/:/mnt/
+    build: ./orders
+    working_dir: /backend/
+    command: python app.py
+    # depends_on: 
+    #   - redis
+  mcs_orders_02:
+    image: mcs_orders:latest
+    volumes:
+        - ./orders/:/mnt/
+    build: ./orders
+    working_dir: /backend/
+    command: python app.py
+    # depends_on: 
+    #   - redis
+  mcs_orders_03:
+    image: mcs_orders:latest
+    volumes:
+        - ./orders/:/mnt/
+    build: ./orders
+    working_dir: /backend/
+    command: python app.py
+    # depends_on: 
+    #   - redis
+
+  # mcs_orders-resgistration:
+  #   volumes:
+  #       - ./orders-resgistration/:/mnt/
+  #   build: ./orders-resgistration
+  #   working_dir: /backend/
+  #   command: python app.py
+    # depends_on: 
+    #   - redis
+  # worker-orders:
+  #   volumes:
+  #     - ./ordenes/:/mnt/
+  #   build: ./ordenes
+  #   working_dir: /backend/
+  #   command: rq worker -u 'redis://redis/0'
+  #   depends_on:
+  #     - redis
+  # worker-products:
+  #   volumes:
+  #     - ./productos/:/mnt/
+  #   build: ./productos
+  #   working_dir: /backend/
+  #   command: rq worker -u 'redis://redis/1'
+  #   depends_on:
+  #     - redis
+
+  nginx-balancer:
+    image: nginx:latest
+    ports:
+        - 8080:8080
+    volumes:
+        - ./nginx-balancer/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+        - mcs_orders_01
+        - mcs_orders_02
+        - mcs_orders_03        
+        # - mcs_orders-resgistration
